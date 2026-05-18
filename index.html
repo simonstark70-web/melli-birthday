@@ -94,6 +94,7 @@
     cursor: pointer;
     transition: transform 0.4s ease;
     filter: drop-shadow(0 18px 30px rgba(120, 20, 60, 0.35));
+    clip-path: inset(-200vh 0 0 0);
   }
 
   .envelope-wrap:hover { transform: translateY(-6px) scale(1.02); }
@@ -232,10 +233,10 @@
   /* ---------- LETTER ---------- */
   .letter {
     position: absolute;
-    top: 12%;
+    top: 0%;
     left: 7%;
     width: 86%;
-    height: 80%;
+    height: 140%;
     background: #ffffff;
     border-radius: 3px;
     box-shadow:
@@ -250,7 +251,7 @@
   }
 
   .envelope-wrap.open .letter {
-    transform: translateY(-145%);
+    transform: translateY(-115%);
     pointer-events: auto;
   }
 
@@ -333,7 +334,7 @@
 <div class="floaty-layer" id="floaty-layer"></div>
 
 <!-- sailor moon at the bottom edge -->
-<img class="bottom-friend" src="images/melli-bottom.png" alt="">
+<img class="bottom-friend" src="melli-bottom.png" alt="">
 
 <!-- envelope -->
 <div class="stage">
@@ -405,9 +406,9 @@
     // 10% chance for an image, 90% for a heart
     const roll = Math.random();
     if (roll < 0.07) {
-      el.innerHTML = `<img src="images/luna.png" style="width:${30 + Math.random()*22}px;">`;
+      el.innerHTML = `<img src="luna.png" style="width:${30 + Math.random()*22}px;">`;
     } else if (roll < 0.14) {
-      el.innerHTML = `<img src="images/moon-pose.png" style="width:${32 + Math.random()*22}px;">`;
+      el.innerHTML = `<img src="moon-pose.png" style="width:${32 + Math.random()*22}px;">`;
     } else {
       el.innerHTML = heartSVGs[Math.floor(Math.random() * heartSVGs.length)];
     }
