@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Für Melli ♥</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Pacifico&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Patrick Hand', cursive;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse at 20% 10%, #ffd6e8 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, #ffb8d8 0%, transparent 55%),
+      linear-gradient(180deg, #ff9ec7 0%, #ff7eb3 100%);
+    position: relative;
+  }
+
+  /* ---------- FLOATING LAYER (behind envelope) ---------- */
+  .floaty-layer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .floaty {
+    position: absolute;
+    bottom: -80px;
+    animation: float-up linear infinite;
+    opacity: 0;
+  }
+
+  .floaty svg { display: block; }
+
+  .floaty img {
+    display: block;
+    filter: drop-shadow(0 4px 8px rgba(150, 30, 80, 0.25));
+  }
+
+  @keyframes float-up {
+    0%   { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0; }
+    10%  { opacity: 0.9; }
+    50%  { transform: translateY(-50vh) rotate(15deg) translateX(20px); opacity: 1; }
+    90%  { opacity: 0.85; }
+    100% { transform: translateY(-110vh) rotate(-10deg) translateX(-20px); opacity: 0; }
+  }
+
+  /* ---------- BOTTOM SAILOR MOON (always at bottom edge) ---------- */
+  .bottom-friend {
+    position: absolute;
+    bottom: -20px;
+    right: 4%;
+    width: 240px;
+    z-index: 2;
+    pointer-events: none;
+    animation: sway 5s ease-in-out infinite;
+    filter: drop-shadow(0 6px 12px rgba(150, 30, 80, 0.3));
+  }
+
+  @keyframes sway {
+    0%, 100% { transform: rotate(-2deg) translateY(0); }
+    50%      { transform: rotate(2deg) translateY(-6px); }
+  }
+
+  /* ---------- STAGE ---------- */
+  .stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+  }
+
+  /* ---------- ENVELOPE ---------- */
+  .envelope-wrap {
+    position: relative;
+    width: 420px;
+    max-width: 88vw;
+    aspect-ratio: 7 / 5;
+    cursor: pointer;
+    transition: transform 0.4s ease;
+    filter: drop-shadow(0 18px 30px rgba(120, 20, 60, 0.35));
+  }
+
+  .envelope-wrap:hover { transform: translateY(-6px) scale(1.02); }
+  .envelope-wrap.open  { cursor: default; }
+  .envelope-wrap.open:hover { transform: none; }
+
+  /* envelope body (back rectangle) */
+  .env-back {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #f7d77a 0%, #e8b94a 100%);
+    border-radius: 6px;
+    z-index: 1;
+  }
+
+  /* envelope front - covers full envelope so letter hides behind it */
+  .env-front {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    border-radius: 6px;
+    background: linear-gradient(160deg, #f7d77a 0%, #e8b94a 100%);
+    overflow: hidden;
+    pointer-events: none;
+    box-shadow: inset 0 6px 12px rgba(120, 60, 20, 0.15);
+  }
+  /* subtle darker tone on top half (where flap rests when closed) */
+  .env-front::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 48%;
+    background: linear-gradient(180deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0) 100%);
+  }
+  /* diagonal pocket seams on the bottom */
+  .env-front::after {
+    content: "";
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 52%;
+    background:
+      linear-gradient(135deg, transparent 49.5%, rgba(180, 130, 30, 0.4) 50%, transparent 50.5%) left bottom / 50% 100% no-repeat,
+      linear-gradient(225deg, transparent 49.5%, rgba(180, 130, 30, 0.4) 50%, transparent 50.5%) right bottom / 50% 100% no-repeat;
+  }
+  /* the open top edge of the envelope - subtle inner shadow line */
+  .env-rim {
+    position: absolute;
+    top: -2px; left: 0; right: 0;
+    height: 8px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, transparent 100%);
+    z-index: 5;
+    border-radius: 6px 6px 0 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease 0.5s;
+  }
+  .envelope-wrap.open .env-rim { opacity: 1; }
+
+  /* name on envelope - positioned on the lower front, below the flap */
+  .env-name {
+    position: absolute;
+    top: 72%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-3deg);
+    z-index: 5;
+    font-family: 'Pacifico', cursive;
+    font-size: 56px;
+    color: #c1306b;
+    text-shadow: 2px 2px 0 rgba(255,255,255,0.4);
+    user-select: none;
+    pointer-events: none;
+  }
+  .env-name .i-wrap {
+    position: relative;
+    display: inline-block;
+  }
+  .env-name .i-wrap .real-i {
+    /* hide the natural dot by clipping it - we draw our own heart on top */
+    position: relative;
+  }
+  .env-name .heart-dot {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-8deg);
+    font-size: 28px;
+    color: #e94777;
+  }
+
+  /* flap */
+  .env-flap {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 52%;
+    background: linear-gradient(180deg, #f7d77a 0%, #e8b94a 100%);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    transition: transform 0.7s cubic-bezier(0.5, 0, 0.3, 1);
+    z-index: 6;
+  }
+  .env-flap::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    background: linear-gradient(180deg, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.12) 100%);
+  }
+
+  .envelope-wrap.open .env-flap {
+    transform: rotateX(180deg);
+    z-index: 1;
+  }
+
+  /* hint */
+  .hint {
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Caveat', cursive;
+    font-size: 26px;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(180, 40, 90, 0.4);
+    white-space: nowrap;
+    animation: bounce 1.6s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .envelope-wrap.open .hint { display: none; }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50%      { transform: translateX(-50%) translateY(-8px); }
+  }
+
+  /* ---------- LETTER ---------- */
+  .letter {
+    position: absolute;
+    top: 12%;
+    left: 7%;
+    width: 86%;
+    height: 80%;
+    background: #ffffff;
+    border-radius: 3px;
+    box-shadow:
+      0 1px 2px rgba(120, 60, 20, 0.2),
+      0 6px 14px rgba(120, 60, 20, 0.15);
+    z-index: 3;
+    padding: 20px 22px;
+    overflow: hidden;
+    transition: transform 1s cubic-bezier(0.34, 1.15, 0.64, 1) 0.4s;
+    transform: translateY(0);
+    pointer-events: none;
+  }
+
+  .envelope-wrap.open .letter {
+    transform: translateY(-72%);
+    pointer-events: auto;
+  }
+
+  .letter-content {
+    font-family: 'Caveat', cursive;
+    font-size: 21px;
+    line-height: 27px;
+    color: #4a2030;
+  }
+
+  .letter-content h2 {
+    font-family: 'Pacifico', cursive;
+    font-size: 26px;
+    color: #c1306b;
+    margin-bottom: 6px;
+    font-weight: normal;
+  }
+  .letter-content p {
+    margin-bottom: 6px;
+  }
+  .letter-content .code-box {
+    font-family: 'Courier New', monospace;
+    font-size: 17px;
+    letter-spacing: 1.5px;
+    background: linear-gradient(180deg, #fff3f8 0%, #ffe4ee 100%);
+    color: #c1306b;
+    text-align: center;
+    padding: 8px 6px;
+    border-radius: 5px;
+    border: 1px dashed #e94777;
+    margin: 8px 0 4px;
+    font-weight: bold;
+  }
+  .letter-content .code-note {
+    text-align: center;
+    font-size: 16px;
+    color: #999;
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+  .letter-content .signature {
+    margin-top: 10px;
+    text-align: right;
+    font-size: 24px;
+    color: #c1306b;
+  }
+
+  /* close button - inside the letter, top-right corner */
+  .close-btn {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: rgba(193, 48, 107, 0.08);
+    border: 1px solid #c1306b;
+    color: #c1306b;
+    font-family: 'Caveat', cursive;
+    font-size: 16px;
+    padding: 1px 10px 3px;
+    border-radius: 16px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.4s ease 1s, background 0.2s;
+    z-index: 8;
+  }
+  .close-btn:hover { background: #c1306b; color: #fff; }
+  .envelope-wrap.open .close-btn { opacity: 1; }
+
+  @media (max-width: 480px) {
+    .env-name { font-size: 48px; }
+    .env-name .heart-dot { top: -16px; font-size: 22px; }
+    .bottom-friend { width: 160px; right: 2%; }
+    .letter-content { font-size: 19px; line-height: 28px; }
+    .letter-content h2 { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- floating hearts + small images behind envelope -->
+<div class="floaty-layer" id="floaty-layer"></div>
+
+<!-- sailor moon at the bottom edge -->
+<img class="bottom-friend" src="images/melli-bottom.png" alt="">
+
+<!-- envelope -->
+<div class="stage">
+  <div class="envelope-wrap" id="envelope" onclick="openEnvelope(event)">
+
+    <div class="env-back"></div>
+
+    <!-- the letter sits between back and front -->
+    <div class="letter" onclick="event.stopPropagation()">
+      <button class="close-btn" onclick="closeEnvelope(event)">✕</button>
+      <div class="letter-content">
+        <!-- ============================================================ -->
+        <!-- ✏️  HIER DEN BRIEFTEXT ÄNDERN  ✏️                            -->
+        <!-- ============================================================ -->
+        <h2>Liebe Melli,</h2>
+        <p>ich wünsche Dir zu deinem 29,6 Geburtstag alles Liebe! 🎂</p>
+        <p>Ich hoffe du hast gemütlich in deinen Geburtstag gezockt und will dir hiermit schonmal einen kleinen Teil des Geschenkes übergeben:</p>
+        <div class="code-box">KZMN-J338-7ZDT-XHKK</div>
+        <div class="code-note">(V-Bucks hahaha)</div>
+        <p class="signature">Simon ♥</p>
+        <!-- ============================================================ -->
+      </div>
+    </div>
+
+    <!-- subtle dark line at envelope top edge (when open) - depth cue -->
+    <div class="env-rim"></div>
+
+    <div class="env-front"></div>
+
+    <div class="env-name">
+      Mell<span class="i-wrap">ı<span class="heart-dot">♥</span></span>
+    </div>
+
+    <div class="env-flap"></div>
+
+    <div class="hint">klick mich ↑</div>
+
+  </div>
+</div>
+
+<script>
+  // ---------- floating hearts + small images ----------
+  const layer = document.getElementById('floaty-layer');
+
+  // 4 slightly-imperfect heart SVGs (each one a bit wonky on purpose)
+  const heartSVGs = [
+    `<svg width="30" height="28" viewBox="0 0 30 28" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15 26 C 4 18, 1 11, 6 6 C 10 2, 14 5, 15 8 C 16 4, 21 2, 25 6 C 30 12, 25 19, 15 26 Z"
+      fill="#e94777" stroke="#a8174d" stroke-width="1.2" stroke-linejoin="round"/>
+    </svg>`,
+    `<svg width="26" height="24" viewBox="0 0 30 28" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15 25 C 5 17, 2 12, 5 7 C 9 2, 15 6, 15 9 C 16 5, 22 3, 26 8 C 29 13, 24 19, 15 25 Z"
+      fill="#ff6fa8" stroke="#a8174d" stroke-width="1.1"/>
+    </svg>`,
+    `<svg width="22" height="20" viewBox="0 0 30 28" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 26 C 6 19, 2 13, 7 7 C 11 3, 15 7, 15 9 C 17 5, 22 4, 25 9 C 28 14, 22 20, 14 26 Z"
+      fill="#ff90c0" stroke="#a8174d" stroke-width="1"/>
+    </svg>`,
+    `<svg width="34" height="32" viewBox="0 0 30 28" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15 27 C 4 19, 0 12, 6 6 C 11 2, 15 5, 15 8 C 16 5, 20 2, 25 7 C 30 13, 26 20, 15 27 Z"
+      fill="#ffb8d8" stroke="#a8174d" stroke-width="1.3"/>
+    </svg>`,
+  ];
+
+  function spawnFloaty() {
+    const el = document.createElement('div');
+    el.className = 'floaty';
+
+    // 10% chance for an image, 90% for a heart
+    const roll = Math.random();
+    if (roll < 0.07) {
+      el.innerHTML = `<img src="images/luna.png" style="width:${30 + Math.random()*22}px;">`;
+    } else if (roll < 0.14) {
+      el.innerHTML = `<img src="images/moon-pose.png" style="width:${32 + Math.random()*22}px;">`;
+    } else {
+      el.innerHTML = heartSVGs[Math.floor(Math.random() * heartSVGs.length)];
+    }
+
+    el.style.left = (Math.random() * 100) + '%';
+    const duration = 7 + Math.random() * 8;
+    el.style.animationDuration = duration + 's';
+    el.style.animationDelay = (Math.random() * -3) + 's';
+
+    layer.appendChild(el);
+    setTimeout(() => el.remove(), duration * 1000 + 500);
+  }
+
+  // pre-fill the screen a little so it doesn't start empty
+  for (let i = 0; i < 12; i++) {
+    setTimeout(spawnFloaty, i * 200);
+  }
+  setInterval(spawnFloaty, 550);
+
+  // ---------- envelope open/close ----------
+  const envelope = document.getElementById('envelope');
+
+  function openEnvelope(e) {
+    if (envelope.classList.contains('open')) return;
+    envelope.classList.add('open');
+  }
+  function closeEnvelope(e) {
+    e.stopPropagation();
+    envelope.classList.remove('open');
+  }
+</script>
+
+</body>
+</html>
